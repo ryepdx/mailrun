@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_mailrun_warehouse" model="ir.ui.view">
+            <field name="name">stock.warehouse</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.view_warehouse"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='lot_output_id']" position="after">
+                    <field name="mailrun_input_id"/>
+                    <field name="mailrun_output_id"/>
+					<field name="warehouse_group_id"/>
+				</xpath>
+            </field>
+        </record>
+
+        <record id="view_mailrun_stock_move" model="ir.ui.view">
+            <field name="name">stock.move</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="mailrun_destination"/>
+				</xpath>
+            </field>
+        </record>
+
+        <record id="form_mailrun_warehouse_group" model="ir.ui.view">
+            <field name="name">mailrun.warehouse.group</field>
+            <field name="type">form</field>
+            <field name="model">mailrun.warehouse.group</field>
+            <field name="arch" type="xml">
+                <form string="" version="7.0">
+                    <group colspan="4" col="4">
+                        <field name="name" colspan="4"/>
+                        <field name="warehouse_ids" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+      </data>
+</openerp>

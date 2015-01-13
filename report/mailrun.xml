@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report id="quickship.report_mailrun"
+        		model="stock.move"
+        		name="mailrun"
+        		string="Mailrun"
+        		rml="mailrun/report/mailrun.rml"
+                menu="True"
+                auto="False"
+        		header="False"/>
+    </data>
+</openerp>

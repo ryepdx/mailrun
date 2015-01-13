@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+		<report id="quickship.report_picking_ticket"
+        		model="stock.picking.out"
+        		name="mailrun.picking.list"
+        		string="Picking List"
+        		rml="mailrun/report/picking_list.rml"
+        		header="False"/>
+    </data>
+</openerp>

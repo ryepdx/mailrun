@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+     <data>
+        <record id="mailrun_wizard_view" model="ir.ui.view">
+             <field name="name">mailrun.wizard.form</field>
+             <field name="model">mailrun.wizard</field>
+             <field name="arch" type="xml">
+				<form string="Mailrun" version="7.0">
+                    <group>
+						<field name= "date"/>
+                    </group>
+					<group height="50" width="320">
+						<footer>
+							<button name="generate_report" string="Generate Report" type="object" icon="gtk-ok" default_focus="1"/>
+		 				</footer>
+ 					</group>
+				</form>
+			</field>
+		</record>
+
+        <record id="action_mailrun" model="ir.actions.act_window">
+            <field name="name">Mailrun</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mailrun.wizard</field>
+			<field name="view_id" ref="mailrun_wizard_view"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem action="action_mailrun" id="menu_report_mailrun" name="Mailrun" parent="quickship.menu_stock_quickship" />
+	</data>
+</openerp>
