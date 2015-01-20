@@ -10,13 +10,13 @@ that are being shared with the logged-in user's company warehouses. Stock gets
 gets pulled from the "highest weighted" of those warehouses. Weights are
 calculated as follows:
 
-1pt  - Warehouse location's address record is the same as the stock location of
+- 1pt: Warehouse location's address record is the same as the stock location of
        the order's shop's warehouse's stock location address record.
 
-2pts - Warehouse location record is the same as the order's shop's warehouse's
+- 2pts: Warehouse location record is the same as the order's shop's warehouse's
        stock location record.
 
-4pts - Warehouse location has the item in stock.
+- 4pts: Warehouse location has the item in stock.
 
 In other words, delivery orders from sales will pull from whatever location has
 the item in stock. If there are multiple locations that have the item in stock,
