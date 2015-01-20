@@ -5,7 +5,7 @@
              <field name="name">mailrun.wizard.form</field>
              <field name="model">mailrun.wizard</field>
              <field name="arch" type="xml">
-				<form string="Mailrun" version="7.0">
+				<form string="Mailrun Requests" version="7.0">
                     <group>
 						<field name= "date"/>
                     </group>
