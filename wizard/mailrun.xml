@@ -26,6 +26,6 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem action="action_mailrun" id="menu_report_mailrun" name="Mailrun" parent="quickship.menu_stock_quickship" />
+        <menuitem action="action_mailrun" id="menu_report_mailrun" name="Mailrun Requests" parent="stock.menu_stock_warehouse_mgmt" />
 	</data>
 </openerp>
