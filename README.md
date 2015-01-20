@@ -10,8 +10,8 @@ that are being shared with the logged-in user's company warehouses. Stock gets
 gets pulled from the "highest weighted" of those warehouses. Weights are
 calculated as follows:
 
-- 1pt: Warehouse location's address record is the same as the stock location of
-       the order's shop's warehouse's stock location address record.
+- 1pt: Warehouse location's address record is the same as the order's shop's
+       warehouse's stock location's address record.
 
 - 2pts: Warehouse location record is the same as the order's shop's warehouse's
        stock location record.
@@ -52,5 +52,4 @@ one new mailrun report can be generated per day. (This constraint is in place
 to reduce the chances of stock moves being missed due to having been placed on
 mailrun reports accidentally generated after the mailrun for that day has taken
 place.)
-
 
