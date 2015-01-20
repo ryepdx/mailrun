@@ -62,7 +62,7 @@ class sale_order(osv.Model):
 
     def _prepare_order_line_move(self, cr, uid, order, line, picking_id, date_planned, context=None):
         location_pool = self.pool.get("stock.location")
-        location_id = order.shop_id.warehouse_id.lot_stock_id.id
+        location = order.shop_id.warehouse_id.lot_stock_id
         output_id = order.shop_id.warehouse_id.lot_output_id.id
 
         inventory_pool = self.pool.get('stock.inventory.line')
@@ -72,8 +72,8 @@ class sale_order(osv.Model):
             )]]
         ))]
 
-        if location_id not in location_ids:
-            location_id = order.shop_id.warehouse_id.lot_input_id.id
+        if location.id not in location_ids:
+            location = order.shop_id.warehouse_id.lot_input_id
             warehouse_pool = self.pool.get("stock.warehouse")
             warehouse = warehouse_pool.browse(cr, SUPERUSER_ID, order.shop_id.warehouse_id.id, context=context)
             potential_locations = []
@@ -88,10 +88,10 @@ class sale_order(osv.Model):
             ]
 
         if potential_locations:
-            location_id, output_id = sorted(
-                potential_locations, key=lambda l: location_pool.location_weight(cr, uid, l[0], line.product_id)
+            location, output_id = sorted(
+                potential_locations, key=lambda l: location_pool.location_weight(cr, uid, l[0], line.product_id,
+                                                                                 preferred_locations=[location])
             )[-1]
-            location_id = location_id.id
             output_id = output_id.id
 
         return {
@@ -107,7 +107,7 @@ class sale_order(osv.Model):
                     or line.product_uom.id,
             'product_packaging': line.product_packaging.id,
             'partner_id': line.address_allotment_id.id or order.partner_shipping_id.id,
-            'location_id': location_id,
+            'location_id': location.id,
             'location_dest_id': output_id,
             'sale_line_id': line.id,
             'tracking_id': False,
