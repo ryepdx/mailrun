@@ -26,7 +26,7 @@
     'description': "Allows sharing of inventory across warehouses and facilitates the transfer thereof.",
     'author': 'RyePDX LLC',
     'website': ' http://ryepdx.com',
-    'depends': ['quickship'],
+    'depends': ['quickship', 'mrp'],
     'data': [
         'report/picking_list.xml',
         'report/mailrun.xml',
