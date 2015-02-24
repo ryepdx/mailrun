@@ -51,9 +51,12 @@ class sale_order(osv.Model):
         }
 
     def _prepare_mailrun_procurement(self, cr, uid, order, procurement, context=None):
+        if not procurement.get('location_id'):
+            return None
+
         location = self.pool.get("stock.location").browse(cr, uid, procurement['location_id'])
 
-        if location.calculated_company_id.id == order.company_id.id:
+        if not location or location.calculated_company_id.id == order.company_id.id:
             return None
 
         mailrun_procurement = copy(procurement)
@@ -127,13 +130,14 @@ class sale_order(osv.Model):
         warehouse_pool = self.pool.get('stock.warehouse')
         warehouse = warehouse_pool.browse(cr, SUPERUSER_ID, warehouse_pool.search(cr, SUPERUSER_ID, [
             ('lot_input_id', 'in', ([pl.id for pl in location.parent_location_ids] + [location.id]))
-        ]))[0]
+        ]))
 
         if location.calculated_company_id.id == order.company_id.id \
                 or (location.partner_id and location.partner_id.id == location.calculated_partner_id.id) \
                 or not warehouse:
             return None
 
+        warehouse = warehouse[0]
         mailrun_move['location_dest_id'] = warehouse.mailrun_output_id.id
         mailrun_move['company_id'] = warehouse.company_id.id
         mailrun_move['mailrun_destination'] = location.id
@@ -268,10 +272,11 @@ class sale_order(osv.Model):
                     procurement_obj.create(cr, SUPERUSER_ID, mailrun_procurement)
                     procurement['location'] = order.shop_id.warehouse_id.mailrun_input_id
 
-                proc_id = procurement_obj.create(cr, uid, procurement)
-                proc_ids.append(proc_id)
-                line.write({'procurement_id': proc_id})
-                self.ship_recreate(cr, uid, order, line, move_id, proc_id)
+                if procurement.get('location'):
+                    proc_id = procurement_obj.create(cr, uid, procurement)
+                    proc_ids.append(proc_id)
+                    line.write({'procurement_id': proc_id})
+                    self.ship_recreate(cr, uid, order, line, move_id, proc_id)
 
         wf_service = netsvc.LocalService("workflow")
 
