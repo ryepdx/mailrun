@@ -55,8 +55,8 @@ class product(osv.osv):
         # build the list of ids of children of the location given by id
         if context.get('compute_child', True):
             location_ids = self.pool.get('stock.location').search(cr, uid, [
-                '|', ('id', 'in', location_ids), ('location_id', 'child_of', location_ids)
-            ]) or []
+                '|', ('id', 'in', location_ids or []), ('location_id', 'child_of', location_ids)
+            ]) if location_ids else []
 
         if not location_ids:
             return {}.fromkeys(ids, 0.0)
