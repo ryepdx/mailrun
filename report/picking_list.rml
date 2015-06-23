@@ -65,6 +65,7 @@
           <para style="TableHeading" >Picking List</para>
           <para style="TableContents">[[ o.origin or '' ]]</para>
           <para style="TableContents">Printed [[time.strftime("%m/%d/%Y")]]</para>
+          <para style="TableContents">Shipping: [[ ship_type(o.pick_sheet_order) or '']]</para> 
           <para style="Standard">Requested Shipping: [[ o.ship_company_code.upper() or '' ]]</para>
         </td>
         <td>
