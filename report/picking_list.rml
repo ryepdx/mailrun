@@ -46,12 +46,12 @@
     </initialize>
     <paraStyle name="TableHeading" fontName="Helvetica-Bold" alignment="LEFT"/>
     <paraStyle name="Standard" fontName="Helvetica" alignment="LEFT"/>
-    <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="Heading" fontName="Helvetica" fontSize="12.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
     <paraStyle name="List" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
     <paraStyle name="Caption" fontName="Helvetica" fontSize="12.0" leading="15" spaceBefore="6.0" spaceAfter="6.0"/>
     <paraStyle name="Index" fontName="Helvetica"/>
-    <paraStyle name="TableContents" fontName="Helvetica"/>
+    <paraStyle name="TableContents" fontName="Helvetica" fontSize="10.0"/>
     <paraStyle name="TableContentsCenter" fontName="Helvetica" alignment="CENTER"/>
     <paraStyle name="TableContentsRight" fontName="Helvetica" alignment="RIGHT"/>
     <images/>
@@ -91,9 +91,9 @@
       <font color="white"> </font>
     </para>
     <para style="Heading">In Warehouse</para>
-    <spacer length="0.5cm"/>
+    <spacer length="0.05cm"/>
 
-      <blockTable colWidths="96.0,164.0,100.0,120.0" style="Table2">
+      <blockTable colWidths="96.0,214.0,75.0,95.0" style="Table2">
       <tr>
         <td>
           <para style="TableHeading">Item</para>
@@ -111,7 +111,7 @@
     </blockTable>
     <section>
       <para style="Standard">[[ repeatIn(localMoves(o.move_lines), 'line') ]]</para>
-      <blockTable colWidths="96.0,164.0,100.0,120.0" style="Table2">
+      <blockTable colWidths="96.0,214.0,75.0,95.0" style="Table2">
         <tr>
           <td>
             <para style="TableContents">[[ line.product_id and line.product_id.code or '' ]]</para>
@@ -132,9 +132,9 @@
       <font color="white"> </font>
     </para>
 
-    <spacer length="1.25cm"/>
+    <spacer length="0.05cm"/>
     <para style="Heading">[[mailrunMoves(o.move_lines) and 'From Mailrun' or removeParentNode('para')]]</para>
-    <spacer length="0.5cm"/>
+    <spacer length="0.05cm"/>
 
       <blockTable colWidths="86.0,106.0,96.0,96.0,96.0" style="Table4">[[mailrunMoves(o.move_lines) or removeParentNode('blockTable')]]
       <tr>
@@ -181,7 +181,7 @@
       <font color="white"> </font>
     </para>
 
-    <spacer length="1.25cm"/>
+    <spacer length="0.05cm"/>
 
     <para style="TableHeading">
         [[ "Note" if o.sale_id and o.sale_id.note else '' ]]
