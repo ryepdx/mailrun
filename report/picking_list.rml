@@ -153,10 +153,10 @@
     </para>
 
     <spacer length="1.25cm"/>
-    <para style="Heading">From Mailrun</para>
+    <para style="Heading">[[mailrunMoves(o.move_lines) and 'From Mailrun' or removeParentNode('para')]]</para>
     <spacer length="0.5cm"/>
 
-      <blockTable colWidths="86.0,106.0,96.0,96.0,96.0" style="Table4">
+      <blockTable colWidths="86.0,106.0,96.0,96.0,96.0" style="Table4">[[mailrunMoves(o.move_lines) or removeParentNode('blockTable')]]
       <tr>
         <td>
           <para style="TableHeading">Item</para>
