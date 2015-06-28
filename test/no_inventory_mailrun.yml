@@ -1,0 +1,45 @@
+-
+  Depends on data from basic_mailrun.yml.
+-
+  Create a location with the output company for holding the test mailrun product.
+-
+  !record {model: stock.location, id: test_location_2}:
+    location_id: stock.stock_location_14
+    company_id: stock.res_company_2
+    usage: internal
+    name: "Mailrun Test Product 2 Location"
+    chained_auto_packing: "manual"
+
+-
+  Create a sales order...
+-
+  !record {model: sale.order, id: test_no_inventory_sale_order}:
+    name: "Test SO"
+    company_id: stock.res_company_2
+    partner_id: stock.res_partner_company_2
+    partner_order_id: stock.res_partner_company_2
+    partner_invoice_id: stock.res_partner_company_2
+    partner_shipping_id: stock.res_partner_company_2
+    shop_id: company_2_shop
+    pricelist_id: product.list0
+
+-
+  ...with a product that should now be out of stock at both companies...
+-
+  !record {model: sale.order.line, id: test_sale_order_line}:
+    order_id: test_no_inventory_sale_order
+    name: "Test Product (out of stock)"
+    product_id: mailrun_test_product_1
+    product_uom_qty: 1
+    product_uos_qty: 1
+    product_uom: product.product_uom_unit
+    price_unit: 30.0
+
+-
+  Confirm the sale order and make sure a mailrun was not created.
+-
+  !python {model: sale.order}: |
+    self.action_button_confirm(cr, uid, [ref('test_no_inventory_sale_order')], context=context)
+    sale = self.browse(cr, uid, ref('test_no_inventory_sale_order'), context=context)
+    picking_ids = self.pool.get("stock.picking").search(cr, uid, [("origin", "=", sale.name)], context=context)
+    assert len(picking_ids) == 1, "Should have only 1 delivery order!"

@@ -34,6 +34,10 @@
         'stock_view.xml',
         'security/ir.model.access.csv',
     ],
+    'test': [
+        'test/basic_mailrun.yml',
+        'test/no_inventory_mailrun.yml'
+    ],
     'installable': True,
     'active': True
 }

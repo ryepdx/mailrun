@@ -1,1 +1,199 @@
-__author__ = 'ryepdx'
+-
+  Create a mailrun group.
+-
+  !record {model: mailrun.warehouse.group, id: test_mailrun_group}:
+    name: "Test Mailrun Group"
+
+-
+  Create the input mailrun location for the output company.
+-
+  !record {model: stock.location, id: output_mailrun_in}:
+    name: "Test Output Company Mailrun-In"
+    company_id: stock.res_company_1
+    location_id: stock.stock_location_stock
+    usage: "transit"
+    chained_auto_packing: "manual"
+
+-
+  Create the output mailrun location for the output company.
+-
+  !record {model: stock.location, id: output_mailrun_out}:
+    name: "Test Output Company Mailrun-Out"
+    company_id: stock.res_company_1
+    location_id: stock.stock_location_stock
+    usage: "transit"
+    chained_auto_packing: "manual"
+
+-
+  Create the input mailrun location for the receiving company.
+-
+  !record {model: stock.location, id: receiving_mailrun_in}:
+    name: "Test Receiving Company Mailrun-In"
+    company_id: stock.res_company_2
+    location_id: stock.stock_location_stock
+    usage: "transit"
+    chained_auto_packing: "manual"
+
+-
+  Create the output mailrun location for the receiving company.
+-
+  !record {model: stock.location, id: receiving_mailrun_out}:
+    name: "Test Receiving Company Mailrun-Out"
+    company_id: stock.res_company_2
+    location_id: stock.stock_location_stock
+    usage: "transit"
+    chained_auto_packing: "manual"
+
+-
+  Create a warehouse for our receiving company...
+-
+  !record {model: stock.location, id: company_2_output_location}:
+    name: "Output"
+    company_id:  stock.res_company_2
+    location_id: stock.stock_location_company
+    usage: "internal"
+    chained_location_type: "customer"
+    chained_auto_packing: "transparent"
+    chained_picking_type: "out"
+    chained_journal_id: stock.journal_delivery
+
+-
+  ...
+-
+  !record {model: stock.location, id: company_2_shop_location}:
+    name: "Receiving Company Shop Location"
+    partner_id: stock.res_partner_company_2
+    company_id: stock.res_company_2
+    location_id: stock.stock_location_locations
+    usage: "internal"
+    active: 1
+
+-
+  ...
+-
+  !record {model: stock.warehouse, id: company_2_warehouse}:
+    name: "Mailrun Test Warehouse"
+    lot_output_id: company_2_output_location
+    lot_stock_id: company_2_shop_location
+    partner_id: stock.res_partner_company_2
+    company_id: stock.res_company_2
+    lot_input_id: company_2_shop_location
+
+-
+  Create a shop for our receiving company.
+-
+  !record {model: sale.shop, id: company_2_shop}:
+    name: "Mailrun Test Shop"
+    warehouse_id: company_2_warehouse
+    company_id: stock.res_company_2
+    payment_default_id: account.account_payment_term_net
+
+-
+  Set mailrun locations for the output company.
+-
+  !python {model: stock.warehouse}: |
+    ids = self.search(cr, uid, [("company_id", "in", [ref("stock.res_company_1")])], context=context)
+    self.write(cr, uid, ids, {
+      "warehouse_group_id": ref("test_mailrun_group"),
+      "mailrun_input_id": ref("output_mailrun_in"),
+      "mailrun_output_id": ref("output_mailrun_out")
+    }, context=context)
+
+-
+  Set mailrun locations for the receiving company.
+-
+  !python {model: stock.warehouse}: |
+    ids = self.search(cr, uid, [("company_id", "in", [ref("stock.res_company_2")])], context=context)
+    self.write(cr, uid, ids, {
+      "warehouse_group_id": ref("test_mailrun_group"),
+      "mailrun_input_id": ref("receiving_mailrun_in"),
+      "mailrun_output_id": ref("receiving_mailrun_out")
+    }, context=context)
+
+-
+  Create a test product.
+-
+  !record {model: "product.product", id: "mailrun_test_product_1"}:
+    name: "Test Mailrun Product #1"
+    default_code: "TMLRN-1"
+    categ_id: product.product_category_3
+    standard_price: 3.0
+    list_price: 3.0
+    type: consu
+    uom_id: product.product_uom_unit
+    uom_po_id: product.product_uom_unit
+    description_sale: "A product for testing mailruns."
+
+-
+  Create a location with the output company for holding the test mailrun product.
+-
+  !record {model: stock.location, id: test_location_1}:
+    location_id: stock.stock_location_shop0
+    company_id: stock.res_company_1
+    usage: internal
+    name: "Mailrun Test Product 1 Location"
+    chained_auto_packing: "manual"
+
+-
+  Stock the output company's warehouse with the test product...
+-
+  !record {model: stock.inventory, id: test_inventory_1}:
+    name: "Mailrun Test Product 1 Inventory"
+    company_id: stock.res_company_1
+
+-
+  ...
+-
+  !record {model: stock.inventory.line, id: test_inventory_line_1}:
+    inventory_id: test_inventory_1
+    product_id: mailrun_test_product_1
+    location_id: test_location_1
+    product_qty: 1
+    product_uom: product.product_uom_unit
+
+-
+  ...
+-
+  !python {model: stock.inventory}: |
+    self.action_confirm(cr, uid, [ref("test_inventory_1")], context=context)
+    self.action_done(cr, uid, [ref("test_inventory_1")], context=context)
+
+-
+  Create a sales order...
+-
+  !record {model: sale.order, id: test_sale_order}:
+    name: "Test SO"
+    company_id: stock.res_company_2
+    partner_id: stock.res_partner_company_2
+    partner_order_id: stock.res_partner_company_2
+    partner_invoice_id: stock.res_partner_company_2
+    partner_shipping_id: stock.res_partner_company_2
+    shop_id: company_2_shop
+    pricelist_id: product.list0
+
+-
+  ...with a product that should trigger a mailrun...
+-
+  !record {model: sale.order.line, id: test_sale_order_line}:
+    order_id: test_sale_order
+    name: "Test Product"
+    product_id: mailrun_test_product_1
+    product_uom_qty: 1
+    product_uos_qty: 1
+    product_uom: product.product_uom_unit
+    price_unit: 30.0
+
+-
+  Confirm the sale order and make sure a mailrun was created.
+-
+  !python {model: sale.order}: |
+    self.action_button_confirm(cr, uid, [ref('test_sale_order')], context=context)
+    sale = self.browse(cr, uid, ref('test_sale_order'), context=context)
+    picking_ids = self.pool.get("stock.picking").search(cr, uid, [("origin", "=", sale.name)], context=context)
+    move_pool = self.pool.get("stock.move")
+    out_move_id = move_pool.search(cr, uid, [
+      ("location_dest_id", "=", ref("output_mailrun_out")), ("picking_id", "in", picking_ids)], context=context)
+    in_move_id = move_pool.search(cr, uid, [
+      ("location_id", "=", ref("receiving_mailrun_in")), ("picking_id", "in", picking_ids)], context=context)
+    assert len(out_move_id) == 1, "Should have created 1 move to mailrun output!"
+    assert len(in_move_id) == 1, "Should have created 1 move to mailrun input!"
