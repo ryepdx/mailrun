@@ -50,7 +50,6 @@ class product(osv.osv):
             context['warehouse'] = False
             context['shop'] = False
             context['location'] = location_ids
-            context['compute_child'] = False
 
         # build the list of ids of children of the location given by id
         if context.get('compute_child', True):

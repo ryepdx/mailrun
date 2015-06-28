@@ -88,7 +88,7 @@ class stock_location(osv.osv):
 
         return res
 
-    def location_weight(self, cr, uid, location, product, preferred_locations=[]):
+    def location_weight(self, cr, uid, location, product, preferred_locations=[], context={}):
         weight = 0
         location = self.pool.get("stock.location").browse(cr, uid, location.id)
         location_partner_ids = [l.partner_id.id for l in preferred_locations if l.partner_id]
@@ -99,12 +99,14 @@ class stock_location(osv.osv):
         if location.id in [l.id for l in preferred_locations]:
             weight += self._location_weights['matches_warehouse_stock_location']
 
-        in_stock = self.pool.get("product.product").get_product_available(
-            cr, uid, [product.id], context={
-                'states': ('done',), 'what': ('in', 'out'), 'location': location.id,
-                'no_warehouse_sharing': True, 'compute_child': False
-            }
-        )
+        default_context = {
+            'states': ('done', 'confirmed'), 'what': ('in', 'out'), 'location': location.id,
+            'no_warehouse_sharing': True, 'compute_child': False
+        }
+        default_context.update(context)
+        in_stock = self.pool.get("product.product")\
+            .get_product_available(cr, uid, [product.id], context=default_context)
+
         if in_stock.get(product.id, 0) > 0:
             weight += self._location_weights['in_stock']
 

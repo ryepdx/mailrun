@@ -87,15 +87,27 @@ class sale_order(osv.Model):
                     potential_locations.append((w.lot_stock_id, w.lot_output_id))
         else:
             potential_locations = [(l, order.shop_id.warehouse_id.lot_output_id)
-                                   for l in location_pool.browse(cr, SUPERUSER_ID, location_ids)
-            ]
+                                   for l in location_pool.browse(cr, SUPERUSER_ID, location_ids)]
 
         if potential_locations:
-            location, output_id = sorted(
-                potential_locations, key=lambda l: location_pool.location_weight(cr, uid, l[0], line.product_id,
-                                                                                 preferred_locations=[location])
+            get_score = lambda l: location_pool.location_weight(
+                cr, uid, l[0], line.product_id, preferred_locations=[location], context={'compute_child': True})
+
+            chosen_location, chosen_output_id = sorted(
+                potential_locations, key=get_score
             )[-1]
-            output_id = output_id.id
+
+            get_product_available = lambda loc: self.pool.get("product.product").get_product_available(
+                cr, uid, [line.product_id.id], context={
+                    'states': ('done', 'confirmed'), 'what': ('in', 'out'), 'location': loc.id,
+                    'no_warehouse_sharing': True, 'compute_child': False
+                }
+            )
+            has_enough_stock = lambda loc: get_product_available(loc) >= line.product_uom_qty
+
+            if has_enough_stock(chosen_location):
+                output_id = chosen_output_id.id
+                location = chosen_location
 
         return {
             'name': line.name,
@@ -146,9 +158,8 @@ class sale_order(osv.Model):
 
     def _prepare_mailrun_in_move(self, cr, uid, order, move, context=None):
         location = self.pool.get("stock.location").browse(cr, uid, move['location_id'])
-
         if location.calculated_company_id.id == order.company_id.id \
-                or location.partner_id.id == location.calculated_partner_id.id:
+                or (location.partner_id.id == location.calculated_partner_id.id and location.partner_id.id):
             return None
 
         mailrun_move = copy(move)
