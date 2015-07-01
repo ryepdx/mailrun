@@ -1,0 +1,16 @@
+-
+  In order to check basic quantity on hand handling...
+-
+  Make sure inventory in company-owned and shared locations shows up in "virtual quantity."
+-
+  !python {model: product.product}: |
+    product = self.browse(cr, ref('user_demo'), ref('product_hemp_knotwork'))
+    assert product.virtual_available == 25.0, "Inventory in some locations are not accounted for in 'quantity on hand.'"
+
+-
+  Make sure inventory in unshared locations don't show up in "virtual quantity."
+-
+  !python {model: product.product}: |
+    product = self.browse(cr, ref('user_demo_pw'), ref('product_hemp_knotwork'))
+    assert product.virtual_available < 16.0, "Inventory in unshared locations are accounted for in 'quantity on hand.' Expected 15, got %s" % int(product.virtual_available)
+    assert product.virtual_available > 14.0, "Inventory in shared locations are not accounted for in 'quantity on hand.' Expected 15, got %s" % int(product.virtual_available)

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!--  Multi Company -->
+        <!--        HOTP-->
+        <record id="res_partner_company_1" model="res.partner">
+            <field name="name">HOTP HQ</field>
+            <field eval="1" name="customer"/>
+            <field eval="1" name="supplier"/>
+            <field name="is_company">1</field>
+            <field eval="1" name="active"/>
+            <field name="street">90 Streets Avenue</field>
+            <field model="res.country" name="country_id" search="[('code','ilike','us')]"/>
+            <field model="res.country.state" name="state_id" search="[('code','ilike','il')]"/>
+            <field name="zip">60610</field>
+            <field name="city">Chicago</field>
+            <field name="email">chicago@yourcompany.com</field>
+            <field name="phone">+1 312 349 3030</field>
+            <field name="website">www.yourcompany.com</field>
+        </record>
+
+        <record id="res_company_1" model="res.company">
+            <field name="currency_id" ref="base.USD"/>
+            <field name="partner_id" ref="res_partner_company_1"/>
+            <field name="parent_id" ref="base.main_company"/>
+            <field name="name">HOTP Co.</field>
+        </record>
+
+        <!--        PW-->
+        <record id="res_partner_company_2" model="res.partner">
+            <field name="name">PW HQ</field>
+            <field eval="1" name="customer"/>
+            <field eval="1" name="supplier"/>
+            <field eval="1" name="active"/>
+            <field name="is_company">1</field>
+            <field name="street">82-85 Academy Avenue</field>
+            <field name="city">Birmingham</field>
+            <field name="zip">B46 3AG</field>
+            <field model="res.country" name="country_id" search="[('code','ilike','gb')]"/>
+            <field name="phone">+44 121 690 4596</field>
+            <field name="email">birmingham@yourcompany.com</field>
+            <field name="website">www.yourcompany.com</field>
+        </record>
+
+        <record id="res_company_2" model="res.company">
+            <field name="currency_id" ref="base.GBP"/>
+            <field name="partner_id" ref="res_partner_company_2"/>
+            <field name="parent_id" ref="base.main_company"/>
+            <field name="name">PW Co.</field>
+        </record>
+
+        <!-- Users -->
+        <record id="partner_demo" model="res.partner">
+            <field name="name">HOTP Stock Demo User</field>
+            <field name="company_id" ref="res_company_1"/>
+            <field name="customer" eval="False"/>
+            <field name="email">demo@example.com</field>
+        </record>
+
+        <record id="user_demo" model="res.users">
+            <field name="partner_id" ref="partner_demo"/>
+            <field name="login">hotp_stock_demo</field>
+            <field name="password">demo</field>
+            <field name="signature">--Mr HOTP Stock Demo</field>
+            <field name="company_ids" eval="[(4, ref('res_company_1'))]"/>
+            <field name="company_id" ref="res_company_1"/>
+            <field name="groups_id" eval="[(6,0,[ref('base.group_user'), ref('base.group_partner_manager')]),(4, ref('stock.group_stock_user'))]"/>
+        </record>
+
+        <record id="partner_demo_pw" model="res.partner">
+            <field name="name">PW Stock Demo User</field>
+            <field name="company_id" ref="res_company_2"/>
+            <field name="customer" eval="False"/>
+            <field name="email">demo@example.com</field>
+        </record>
+
+        <record id="user_demo_pw" model="res.users">
+            <field name="partner_id" ref="partner_demo_pw"/>
+            <field name="login">hotp_stock_demo_pw</field>
+            <field name="password">demo</field>
+            <field name="signature">--Mr PW Stock Demo</field>
+            <field name="company_ids" eval="[(4, ref('res_company_2'))]"/>
+            <field name="company_id" ref="res_company_2"/>
+            <field name="groups_id" eval="[(6,0,[ref('base.group_user'), ref('base.group_partner_manager')]),(4, ref('stock.group_stock_user'))]"/>
+        </record>
+
+        <!-- Owned Locations -->
+        <record id="stock_location_shop_0" model="stock.location">
+            <field name="partner_id" ref="res_partner_company_1"/>
+            <field name="location_id" ref="stock.stock_location_locations"/>
+            <field name="parent_right" ref="stock.stock_location_locations"/>
+            <field name="company_id" ref="res_company_1"/>
+            <field name="usage">internal</field>
+            <field name="chained_location_type">none</field>
+            <field eval="1" name="active"/>
+            <field name="name">HOTP Warehouse Bin</field>
+            <field name="chained_auto_packing">manual</field>
+        </record>
+
+        <record id="stock_location_shop_1" model="stock.location">
+            <field name="partner_id" ref="res_partner_company_1"/>
+            <field name="location_id" ref="stock.stock_location_locations"/>
+            <field name="parent_right" ref="stock.stock_location_locations"/>
+            <field name="company_id" ref="res_company_1"/>
+            <field name="usage">internal</field>
+            <field name="chained_location_type">none</field>
+            <field eval="1" name="active"/>
+            <field name="name">HOTP Warehouse Annex Bin</field>
+            <field name="chained_auto_packing">manual</field>
+        </record>
+
+        <!-- Shared Locations -->
+        <record id="stock_location_shop_2" model="stock.location">
+            <field name="partner_id" ref="res_partner_company_2"/>
+            <field name="location_id" ref="stock.stock_location_locations"/>
+            <field name="parent_right" ref="stock.stock_location_locations"/>
+            <field name="company_id" eval="None"/>
+            <field name="usage">internal</field>
+            <field name="chained_location_type">none</field>
+            <field eval="1" name="active"/>
+            <field name="name">PW Warehouse Bin</field>
+            <field name="chained_auto_packing">manual</field>
+        </record>
+
+        <record id="stock_location_shop_3" model="stock.location">
+            <field name="partner_id" ref="res_partner_company_2"/>
+            <field name="location_id" ref="stock.stock_location_locations"/>
+            <field name="parent_right" ref="stock.stock_location_locations"/>
+            <field name="company_id" eval="None"/>
+            <field name="usage">internal</field>
+            <field name="chained_location_type">none</field>
+            <field eval="1" name="active"/>
+            <field name="name">PW Warehouse Annex Bin</field>
+            <field name="chained_auto_packing">manual</field>
+        </record>
+
+        <record id="stock_location_shop_4" model="stock.location">
+            <field name="partner_id" ref="res_partner_company_2"/>
+            <field name="location_id" ref="stock_location_shop_2"/>
+            <field name="parent_right" ref="stock_location_shop_2"/>
+            <field name="company_id" eval="None"/>
+            <field name="usage">internal</field>
+            <field name="chained_location_type">none</field>
+            <field eval="1" name="active"/>
+            <field name="name">PW Warehouse Office</field>
+            <field name="chained_auto_packing">manual</field>
+        </record>
+
+        <!-- Warehouse sharing -->
+        <record id="warehouse_group" model="mailrun.warehouse.group">
+            <field name="name">Test Warehouse Group</field>
+        </record>
+
+        <!-- Warehouses -->
+        <record id="stock_warehouse_shop_0" model="stock.warehouse">
+            <field name="lot_output_id" ref="stock.stock_location_output"/>
+            <field name="name">HOTP Warehouse</field>
+            <field name="lot_stock_id" ref="stock_location_shop_0"/>
+            <field name="partner_id" ref="res_partner_company_1"/>
+            <field name="company_id" ref="res_company_1"/>
+            <field name="lot_input_id" ref="stock_location_shop_0"/>
+            <field name="warehouse_group_id" ref="warehouse_group"/>
+        </record>
+
+        <record id="stock_warehouse_shop_1" model="stock.warehouse">
+            <field name="lot_output_id" ref="stock.stock_location_output"/>
+            <field name="name">HOTP Warehouse Annex</field>
+            <field name="lot_stock_id" ref="stock_location_shop_1"/>
+            <field name="partner_id" ref="res_partner_company_1"/>
+            <field name="company_id" ref="res_company_1"/>
+            <field name="lot_input_id" ref="stock_location_shop_0"/>
+        </record>
+
+        <record id="stock_warehouse_shop_2" model="stock.warehouse">
+            <field name="lot_output_id" ref="stock.stock_location_output"/>
+            <field name="name">PW Warehouse</field>
+            <field name="lot_stock_id" ref="stock_location_shop_2"/>
+            <field name="partner_id" ref="res_partner_company_2"/>
+            <field name="company_id" ref="res_company_2"/>
+            <field name="lot_input_id" ref="stock_location_shop_2"/>
+            <field name="warehouse_group_id" ref="warehouse_group"/>
+        </record>
+
+        <record id="stock_warehouse_shop_3" model="stock.warehouse">
+            <field name="lot_output_id" ref="stock.stock_location_output"/>
+            <field name="name">PW Warehouse Annex</field>
+            <field name="lot_stock_id" ref="stock_location_shop_3"/>
+            <field name="partner_id" ref="res_partner_company_2"/>
+            <field name="company_id" ref="res_company_2"/>
+            <field name="lot_input_id" ref="stock_location_shop_2"/>
+            <field name="warehouse_group_id" ref="warehouse_group"/>
+        </record>
+
+        <record forcecreate="True" id="property_stock_valuation_account_id" model="ir.property">
+            <field name="name">property_stock_valuation_account_id</field>
+            <field name="fields_id" search="[('model','=','product.category'),('name','=','property_stock_valuation_account_id')]"/>
+            <field eval="'account.account,'+str(ref('account.stk'))" model="account.account" name="value"/>
+             <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <!-- Products -->
+        <record id="product_hemp_knotwork" model="product.product">
+            <field name="name">Hemp Knotwork</field>
+            <field name="default_code">HMPKNTWK</field>
+            <field name="categ_id" ref="product.product_category_3"/>
+            <field name="list_price">10.0</field>
+            <field name="standard_price">5.0</field>
+            <field name="type">consu</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="description_sale"></field>
+        </record>
+
+        <!-- Resource: stock.inventory -->
+        <record id="stock_inventory_0" model="stock.inventory">
+            <field name="name">Starting Inventory</field>
+        </record>
+
+        <record id="stock_inventory_1" model="stock.inventory">
+            <field name="name">Shared Inventory</field>
+        </record>
+
+        <!-- Owned Inventory Lines -->
+        <record id="stock_inventory_line_0" model="stock.inventory.line">
+            <field name="product_id" ref="product_hemp_knotwork"/>
+            <field name="product_uom" ref="product.product_uom_unit"/>
+            <field name="inventory_id" ref="stock_inventory_0"/>
+            <field name="product_qty">10.0</field>
+            <field name="location_id" ref="stock_location_shop_0"/>
+        </record>
+
+        <record id="stock_inventory_line_1" model="stock.inventory.line">
+            <field name="product_id" ref="product_hemp_knotwork"/>
+            <field name="product_uom" ref="product.product_uom_unit"/>
+            <field name="inventory_id" ref="stock_inventory_0"/>
+            <field name="product_qty">10.0</field>
+            <field name="location_id" ref="stock_location_shop_1"/>
+        </record>
+
+        <!-- Shared Inventory Lines -->
+        <record id="stock_inventory_line_2" model="stock.inventory.line">
+            <field name="product_id" ref="product_hemp_knotwork"/>
+            <field name="product_uom" ref="product.product_uom_unit"/>
+            <field name="inventory_id" ref="stock_inventory_0"/>
+            <field name="product_qty">2.0</field>
+            <field name="location_id" ref="stock_location_shop_2"/>
+        </record>
+
+        <record id="stock_inventory_line_3" model="stock.inventory.line">
+            <field name="product_id" ref="product_hemp_knotwork"/>
+            <field name="product_uom" ref="product.product_uom_unit"/>
+            <field name="inventory_id" ref="stock_inventory_0"/>
+            <field name="product_qty">3.0</field>
+            <field name="location_id" ref="stock_location_shop_3"/>
+        </record>
+
+        <!-- Confirm and complete moves for owned inventory -->
+        <function model="stock.inventory" name="action_confirm">
+            <function eval="[[('id', '=', ref('stock_inventory_0'))]]" model="stock.inventory" name="search"/>
+        </function>
+
+        <function model="stock.inventory" name="action_done">
+            <function eval="[[('id', '=', ref('stock_inventory_0'))]]" model="stock.inventory" name="search"/>
+        </function>
+
+        <!-- Confirm and complete moves for shared inventory -->
+        <function model="stock.inventory" name="action_confirm">
+            <function eval="[[('id', '=', ref('stock_inventory_1'))]]" model="stock.inventory" name="search"/>
+        </function>
+
+        <function model="stock.inventory" name="action_done">
+            <function eval="[[('id', '=', ref('stock_inventory_1'))]]" model="stock.inventory" name="search"/>
+        </function>
+    </data>
+</openerp>

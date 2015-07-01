@@ -35,6 +35,8 @@
         'security/ir.model.access.csv',
     ],
     'test': [
+        'test/basic_quantity.xml',
+        'test/basic_quantity.yml',
         'test/basic_mailrun.yml',
         'test/no_inventory_mailrun.yml'
     ],
