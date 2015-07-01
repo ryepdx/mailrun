@@ -99,8 +99,7 @@ class sale_order(osv.Model):
 
             get_product_available = lambda loc: self.pool.get("product.product").get_product_available(
                 cr, uid, [line.product_id.id], context={
-                    'states': ('done', 'confirmed'), 'what': ('in', 'out'), 'location': loc.id,
-                    'no_warehouse_sharing': True, 'compute_child': False
+                    'states': ('done', 'confirmed'), 'what': ('in', 'out'), 'location': loc.id, 'compute_child': False
                 }
             )
             has_enough_stock = lambda loc: get_product_available(loc) >= line.product_uom_qty

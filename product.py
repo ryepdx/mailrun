@@ -8,6 +8,43 @@ import openerp.addons.decimal_precision as dp
 class product(osv.osv):
     _inherit = "product.product"
 
+    def _virtual_available(self, cr, uid, ids, field_names=None, arg=False, context=None):
+        """ Finds the incoming and outgoing quantity of product.
+        @return: Dictionary of values
+        """
+        if context is None:
+            context = {}
+
+        c = context.copy()
+        c.update({'states': ('confirmed', 'waiting', 'assigned', 'done'), 'what': ('in', 'out'),
+                  'warehouse_sharing': True})
+
+        stock = self.get_product_available(cr, uid, ids, context=c)
+
+        res = dict([(id, {}) for id in ids])
+        for id in ids:
+            res[id]['virtual_available'] = stock.get(id, 0.0)
+
+        return res
+
+    _columns = {
+        'virtual_available': fields.function(_virtual_available, multi='qty_available',
+            type='float',  digits_compute=dp.get_precision('Product Unit of Measure'),
+            string='Forecasted Quantity',
+            help="Forecast quantity (computed as Quantity On Hand "
+                 "- Outgoing + Incoming)\n"
+                 "In a context with a single Stock Location, this includes "
+                 "goods stored in this location, or any of its children.\n"
+                 "In a context with a single Warehouse, this includes "
+                 "goods stored in the Stock Location of this Warehouse, or any "
+                 "of its children.\n"
+                 "In a context with a single Shop, this includes goods "
+                 "stored in the Stock Location of the Warehouse of this Shop, "
+                 "or any of its children.\n"
+                 "Otherwise, this includes goods stored in any Stock Location "
+                 "with 'internal' type."),
+    }
+
     def get_product_available(self, cr, uid, ids, context=None):
         """ Finds whether product is available or not in a particular warehouse.
         @return: Dictionary of values
@@ -60,6 +97,7 @@ class product(osv.osv):
         if not location_ids:
             return {}.fromkeys(ids, 0.0)
 
+        context['compute_child'] = not context.get('warehouse_sharing')
         res = super(product, self).get_product_available(cr, uid, ids, context=context)
 
         context['warehouse'] = old_warehouse
@@ -81,7 +119,7 @@ class product(osv.osv):
         for w in warehouse_obj.browse(cr, SUPERUSER_ID, wids, context=context):
             location_ids += [w.lot_stock_id.id]
 
-            if not context.get("no_warehouse_sharing"):
+            if context.get("warehouse_sharing", False):
                 location_ids += [warehouse_ids.lot_stock_id.id for warehouse_ids in w.shared_warehouse_ids]
 
         return location_ids

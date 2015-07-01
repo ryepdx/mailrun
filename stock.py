@@ -100,8 +100,7 @@ class stock_location(osv.osv):
             weight += self._location_weights['matches_warehouse_stock_location']
 
         default_context = {
-            'states': ('done', 'confirmed'), 'what': ('in', 'out'), 'location': location.id,
-            'no_warehouse_sharing': True, 'compute_child': False
+            'states': ('done', 'confirmed'), 'what': ('in', 'out'), 'location': location.id, 'compute_child': True
         }
         default_context.update(context)
         in_stock = self.pool.get("product.product")\
